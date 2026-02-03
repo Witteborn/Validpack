@@ -8,7 +8,7 @@ namespace Validpack;
 /// </summary>
 public class Program
 {
-    private const string Version = "1.0.0";
+    private const string Version = "1.1.0";
 
     public static async Task<int> Main(string[] args)
     {
