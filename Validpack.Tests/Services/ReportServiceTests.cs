@@ -69,8 +69,8 @@ public class ReportServiceTests
 
         var output = CaptureConsoleOutput(() => _service.PrintConsoleReport(result));
 
-        Assert.Contains("ERFOLGREICH", output);
-        Assert.Contains("Keine Probleme gefunden", output);
+        Assert.Contains("PASSED", output);
+        Assert.Contains("No problems found", output);
     }
 
     [Fact]
@@ -80,9 +80,9 @@ public class ReportServiceTests
 
         var output = CaptureConsoleOutput(() => _service.PrintConsoleReport(result));
 
-        Assert.Contains("FEHLGESCHLAGEN", output);
-        Assert.Contains("Probleme gefunden", output);
-        Assert.Contains("PROBLEME GEFUNDEN", output);
+        Assert.Contains("FAILED", output);
+        Assert.Contains("Problems found", output);
+        Assert.Contains("PROBLEMS FOUND", output);
         Assert.Contains("notfound-pkg", output);
     }
 
@@ -93,7 +93,7 @@ public class ReportServiceTests
 
         var output = CaptureConsoleOutput(() => _service.PrintConsoleReport(result));
 
-        Assert.Contains("FEHLGESCHLAGEN", output);
+        Assert.Contains("FAILED", output);
         Assert.Contains("Blacklist", output);
         Assert.Contains("blacklisted-pkg", output);
     }
@@ -106,9 +106,9 @@ public class ReportServiceTests
         var output = CaptureConsoleOutput(() => _service.PrintConsoleReport(result));
 
         // Use Contains with flexible whitespace matching
-        Assert.Matches(@"Valide:\s+5", output);
+        Assert.Matches(@"Valid:\s+5", output);
         Assert.Matches(@"Whitelisted:\s+2", output);
-        Assert.Matches(@"Nicht gefunden:\s+1", output);
+        Assert.Matches(@"Not Found:\s+1", output);
         Assert.Matches(@"Blacklisted:\s+1", output);
     }
 

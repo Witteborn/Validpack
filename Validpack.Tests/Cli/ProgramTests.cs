@@ -76,7 +76,7 @@ public class ProgramTests : IDisposable
         await Program.Main([]);
 
         var output = writer.ToString();
-        Assert.Contains("Fehler", output);
+        Assert.Contains("Error", output);
     }
 
     [Fact]
@@ -191,6 +191,6 @@ public class ProgramTests : IDisposable
         await Program.Main([_tempDir, "--verbose"]);
 
         var output = writer.ToString();
-        Assert.Contains("Scanne Verzeichnis", output);
+        Assert.Contains("Scanning directory", output);
     }
 }

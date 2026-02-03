@@ -4,7 +4,7 @@ using Validpack.Models;
 namespace Validpack.Services;
 
 /// <summary>
-/// Service für die Report-Generierung
+/// Service for report generation
 /// </summary>
 public class ReportService
 {
@@ -12,95 +12,95 @@ public class ReportService
     {
         WriteIndented = true
     };
-    
+
     /// <summary>
-    /// Gibt den Report auf der Konsole aus
+    /// Prints report to console
     /// </summary>
     public void PrintConsoleReport(ScanResult result)
     {
         Console.WriteLine();
         PrintHeader("SUPPLY CHAIN SECURITY SCAN REPORT");
         Console.WriteLine();
-        
-        // Scan-Info
-        Console.WriteLine($"Gescannter Pfad: {result.ScannedPath}");
-        Console.WriteLine($"Scan-Zeitpunkt:  {result.ScanTime:yyyy-MM-dd HH:mm:ss}");
-        Console.WriteLine($"Gescannte Dateien: {result.ScannedFiles.Count}");
+
+        // Scan info
+        Console.WriteLine($"Scanned Path:  {result.ScannedPath}");
+        Console.WriteLine($"Scan Time:     {result.ScanTime:yyyy-MM-dd HH:mm:ss}");
+        Console.WriteLine($"Scanned Files: {result.ScannedFiles.Count}");
         Console.WriteLine();
-        
-        // Zusammenfassung
-        PrintHeader("ZUSAMMENFASSUNG");
+
+        // Summary
+        PrintHeader("SUMMARY");
         Console.WriteLine();
-        Console.WriteLine($"Gefundene Abhängigkeiten:    {result.AllDependencies.Count}");
-        Console.WriteLine($"Eindeutige Abhängigkeiten:   {result.UniqueDependencies.Count}");
+        Console.WriteLine($"Total Dependencies:  {result.AllDependencies.Count}");
+        Console.WriteLine($"Unique Dependencies: {result.UniqueDependencies.Count}");
         Console.WriteLine();
-        
-        PrintWithColor($"  Valide:        {result.ValidCount}", ConsoleColor.Green);
-        PrintWithColor($"  Whitelisted:   {result.WhitelistedCount}", ConsoleColor.Cyan);
-        PrintWithColor($"  Nicht gefunden: {result.NotFoundCount}", 
+
+        PrintWithColor($"  Valid:       {result.ValidCount}", ConsoleColor.Green);
+        PrintWithColor($"  Whitelisted: {result.WhitelistedCount}", ConsoleColor.Cyan);
+        PrintWithColor($"  Not Found:   {result.NotFoundCount}",
             result.NotFoundCount > 0 ? ConsoleColor.Red : ConsoleColor.Green);
-        PrintWithColor($"  Blacklisted:   {result.BlacklistedCount}", 
+        PrintWithColor($"  Blacklisted: {result.BlacklistedCount}",
             result.BlacklistedCount > 0 ? ConsoleColor.Red : ConsoleColor.Green);
         Console.WriteLine();
-        
-        // Probleme im Detail
+
+        // Problems in detail
         var problems = result.ValidationResults.Where(r => r.HasProblem).ToList();
-        
+
         if (problems.Count > 0)
         {
-            PrintHeader("PROBLEME GEFUNDEN");
+            PrintHeader("PROBLEMS FOUND");
             Console.WriteLine();
-            
-            // Nicht gefundene Pakete
+
+            // Not found packages
             var notFound = problems.Where(p => p.Status == ValidationStatus.NotFound).ToList();
             if (notFound.Count > 0)
             {
-                PrintWithColor("Pakete die nicht in der Registry existieren (Supply Chain Attack Risiko):", ConsoleColor.Red);
+                PrintWithColor("Packages not found in registry (Supply Chain Attack Risk):", ConsoleColor.Red);
                 Console.WriteLine();
                 foreach (var item in notFound)
                 {
                     PrintWithColor($"  ! {item.Dependency.Type}: {item.Dependency.Name}", ConsoleColor.Red);
-                    Console.WriteLine($"    Quelle: {item.Dependency.SourceFile}");
+                    Console.WriteLine($"    Source: {item.Dependency.SourceFile}");
                 }
                 Console.WriteLine();
             }
-            
-            // Blacklisted Pakete
+
+            // Blacklisted packages
             var blacklisted = problems.Where(p => p.Status == ValidationStatus.Blacklisted).ToList();
             if (blacklisted.Count > 0)
             {
-                PrintWithColor("Pakete auf der Blacklist:", ConsoleColor.Yellow);
+                PrintWithColor("Blacklisted packages:", ConsoleColor.Yellow);
                 Console.WriteLine();
                 foreach (var item in blacklisted)
                 {
                     PrintWithColor($"  X {item.Dependency.Type}: {item.Dependency.Name}", ConsoleColor.Yellow);
-                    Console.WriteLine($"    Quelle: {item.Dependency.SourceFile}");
+                    Console.WriteLine($"    Source: {item.Dependency.SourceFile}");
                 }
                 Console.WriteLine();
             }
         }
-        
-        // Endergebnis
-        PrintHeader("ERGEBNIS");
+
+        // Final result
+        PrintHeader("RESULT");
         Console.WriteLine();
-        
+
         if (result.HasProblems)
         {
-            PrintWithColor("FEHLGESCHLAGEN - Probleme gefunden!", ConsoleColor.Red);
+            PrintWithColor("FAILED - Problems found!", ConsoleColor.Red);
             Console.WriteLine();
-            Console.WriteLine("Bitte prüfen Sie die oben aufgeführten Probleme.");
-            Console.WriteLine("Wenn es sich um False Positives handelt, fügen Sie die Pakete zur Whitelist hinzu.");
+            Console.WriteLine("Please review the problems listed above.");
+            Console.WriteLine("If these are false positives, add them to the whitelist.");
         }
         else
         {
-            PrintWithColor("ERFOLGREICH - Keine Probleme gefunden.", ConsoleColor.Green);
+            PrintWithColor("PASSED - No problems found.", ConsoleColor.Green);
         }
-        
+
         Console.WriteLine();
     }
-    
+
     /// <summary>
-    /// Gibt den Report als JSON aus
+    /// Prints report as JSON
     /// </summary>
     public void PrintJsonReport(ScanResult result)
     {
@@ -130,10 +130,10 @@ public class ReportService
                     message = r.Message
                 })
         };
-        
+
         Console.WriteLine(JsonSerializer.Serialize(report, _jsonOptions));
     }
-    
+
     private void PrintHeader(string text)
     {
         var line = new string('=', text.Length + 4);
@@ -141,7 +141,7 @@ public class ReportService
         Console.WriteLine($"  {text}");
         Console.WriteLine(line);
     }
-    
+
     private void PrintWithColor(string text, ConsoleColor color)
     {
         var originalColor = Console.ForegroundColor;

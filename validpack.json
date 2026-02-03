@@ -1,10 +1,7 @@
 {
-  "whitelist": [
-    "internal-company-package",
-    "my-private-registry-package"
-  ],
-  "blacklist": [
-    "Newtonsoft.Json",
-    "moment"
+  "whitelist": [],
+  "blacklist": [],
+  "exclude": [
+    "test-projects/**"
   ]
 }

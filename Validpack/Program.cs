@@ -4,54 +4,55 @@ using Validpack.Services;
 namespace Validpack;
 
 /// <summary>
-/// Supply Chain Security Scanner - Prüft Projektabhängigkeiten auf Existenz
+/// Supply Chain Security Scanner - Validates project dependencies
 /// </summary>
 public class Program
 {
     private const string Version = "1.0.0";
-    
+
     public static async Task<int> Main(string[] args)
     {
         var options = ParseArguments(args);
-        
+
         if (options.ShowHelp)
         {
             PrintHelp();
             return 0;
         }
-        
+
         if (!options.IsValid)
         {
             foreach (var error in options.Errors)
             {
-                Console.Error.WriteLine($"Fehler: {error}");
+                Console.Error.WriteLine($"Error: {error}");
             }
             Console.Error.WriteLine();
-            Console.Error.WriteLine("Verwenden Sie --help für Hilfe.");
+            Console.Error.WriteLine("Use --help for usage information.");
             return 2;
         }
-        
+
         try
         {
-            // Konfiguration laden
+            // Load configuration
             var configService = new ConfigService();
             var config = configService.LoadConfiguration(options.ConfigFile);
-            
+
             if (options.Verbose)
             {
-                Console.WriteLine($"Konfiguration geladen: {options.ConfigFile}");
-                Console.WriteLine($"  Whitelist: {config.Whitelist.Count} Einträge");
-                Console.WriteLine($"  Blacklist: {config.Blacklist.Count} Einträge");
+                Console.WriteLine($"Configuration loaded: {options.ConfigFile}");
+                Console.WriteLine($"  Whitelist: {config.Whitelist.Count} entries");
+                Console.WriteLine($"  Blacklist: {config.Blacklist.Count} entries");
+                Console.WriteLine($"  Exclude:   {config.Exclude.Count} patterns");
                 Console.WriteLine();
             }
-            
-            // Scanner ausführen
+
+            // Run scanner
             var scanner = new ScannerService(config, options.Verbose);
             var result = await scanner.ScanAsync(options.Path!);
-            
-            // Report ausgeben
+
+            // Output report
             var reportService = new ReportService();
-            
+
             if (options.OutputFormat.Equals("json", StringComparison.OrdinalIgnoreCase))
             {
                 reportService.PrintJsonReport(result);
@@ -60,13 +61,13 @@ public class Program
             {
                 reportService.PrintConsoleReport(result);
             }
-            
-            // Exit-Code: 0 = OK, 1 = Probleme gefunden
+
+            // Exit code: 0 = OK, 1 = Problems found
             return result.HasProblems ? 1 : 0;
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Unerwarteter Fehler: {ex.Message}");
+            Console.Error.WriteLine($"Unexpected error: {ex.Message}");
             if (options.Verbose)
             {
                 Console.Error.WriteLine(ex.StackTrace);
@@ -74,15 +75,15 @@ public class Program
             return 2;
         }
     }
-    
+
     private static CliOptions ParseArguments(string[] args)
     {
         var options = new CliOptions();
-        
+
         for (int i = 0; i < args.Length; i++)
         {
             var arg = args[i];
-            
+
             switch (arg.ToLowerInvariant())
             {
                 case "-h":
@@ -91,12 +92,12 @@ public class Program
                 case "/?":
                     options.ShowHelp = true;
                     break;
-                    
+
                 case "-v":
                 case "--verbose":
                     options.Verbose = true;
                     break;
-                    
+
                 case "-c":
                 case "--config":
                     if (i + 1 < args.Length)
@@ -105,10 +106,10 @@ public class Program
                     }
                     else
                     {
-                        options.Errors.Add("--config benötigt einen Dateipfad");
+                        options.Errors.Add("--config requires a file path");
                     }
                     break;
-                    
+
                 case "-o":
                 case "--output":
                     if (i + 1 < args.Length)
@@ -116,7 +117,7 @@ public class Program
                         var format = args[++i].ToLowerInvariant();
                         if (format != "console" && format != "json")
                         {
-                            options.Errors.Add($"Ungültiges Ausgabeformat: {format}. Erlaubt: console, json");
+                            options.Errors.Add($"Invalid output format: {format}. Allowed: console, json");
                         }
                         else
                         {
@@ -125,14 +126,14 @@ public class Program
                     }
                     else
                     {
-                        options.Errors.Add("--output benötigt ein Format (console, json)");
+                        options.Errors.Add("--output requires a format (console, json)");
                     }
                     break;
-                    
+
                 default:
                     if (arg.StartsWith("-") || arg.StartsWith("/"))
                     {
-                        options.Errors.Add($"Unbekannte Option: {arg}");
+                        options.Errors.Add($"Unknown option: {arg}");
                     }
                     else if (string.IsNullOrEmpty(options.Path))
                     {
@@ -140,25 +141,25 @@ public class Program
                     }
                     else
                     {
-                        options.Errors.Add($"Unerwartetes Argument: {arg}");
+                        options.Errors.Add($"Unexpected argument: {arg}");
                     }
                     break;
             }
         }
-        
-        // Validierung
+
+        // Validation
         if (string.IsNullOrEmpty(options.Path) && !options.ShowHelp)
         {
-            options.Errors.Add("Pfad zum zu scannenden Verzeichnis fehlt");
+            options.Errors.Add("Path to directory to scan is required");
         }
         else if (!string.IsNullOrEmpty(options.Path) && !Directory.Exists(options.Path))
         {
-            options.Errors.Add($"Verzeichnis existiert nicht: {options.Path}");
+            options.Errors.Add($"Directory does not exist: {options.Path}");
         }
-        
+
         return options;
     }
-    
+
     private static void PrintHelp()
     {
         Console.WriteLine($@"
@@ -168,49 +169,53 @@ Validpack - Supply Chain Security Scanner v{Version}
 Validates project dependencies against official registries.
 Detects potential Supply Chain Attacks by finding non-existent packages.
 
-VERWENDUNG:
-  validpack <pfad> [optionen]
+USAGE:
+  validpack <path> [options]
 
-ARGUMENTE:
-  <pfad>              Pfad zum zu scannenden Verzeichnis
+ARGUMENTS:
+  <path>              Path to directory to scan
 
-OPTIONEN:
-  -c, --config <datei>  Pfad zur Konfigurationsdatei
-                        (Standard: validpack.json)
-  -o, --output <format> Ausgabeformat: console, json
-                        (Standard: console)
-  -v, --verbose         Detaillierte Ausgabe
-  -h, --help            Diese Hilfe anzeigen
+OPTIONS:
+  -c, --config <file>   Path to configuration file
+                        (default: validpack.json)
+  -o, --output <format> Output format: console, json
+                        (default: console)
+  -v, --verbose         Verbose output
+  -h, --help            Show this help
 
-BEISPIELE:
+EXAMPLES:
   validpack .
-      Scannt das aktuelle Verzeichnis
+      Scan current directory
 
-  validpack ./mein-projekt --verbose
-      Scannt mit detaillierter Ausgabe
+  validpack ./my-project --verbose
+      Scan with verbose output
 
-  validpack ./projekt --config custom-config.json
-      Verwendet eine benutzerdefinierte Konfiguration
+  validpack ./project --config custom-config.json
+      Use custom configuration file
 
-  validpack ./projekt --output json
-      Gibt das Ergebnis als JSON aus (für CI/CD Pipelines)
+  validpack ./project --output json
+      Output as JSON (for CI/CD pipelines)
 
-KONFIGURATIONSDATEI (validpack.json):
+CONFIGURATION FILE (validpack.json):
 {{
   ""whitelist"": [
-    ""internes-paket"",
-    ""bekanntes-false-positive""
+    ""internal-package"",
+    ""known-false-positive""
   ],
   ""blacklist"": [
     ""Newtonsoft.Json"",
     ""moment""
+  ],
+  ""exclude"": [
+    ""test-projects/**"",
+    ""samples/**""
   ]
 }}
 
-EXIT-CODES:
-  0  Keine Probleme gefunden
-  1  Probleme gefunden (nicht existierende oder blacklisted Pakete)
-  2  Konfigurationsfehler oder unerwarteter Fehler
+EXIT CODES:
+  0  No problems found
+  1  Problems found (non-existent or blacklisted packages)
+  2  Configuration error or unexpected failure
 
 SUPPORTED PACKAGE MANAGERS:
   - npm      (package.json)
