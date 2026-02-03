@@ -1,0 +1,14 @@
+{
+  "name": "invalid-npm-test",
+  "version": "1.0.0",
+  "description": "Testprojekt mit ungültigen npm-Paketen (Supply Chain Attack Simulation)",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "this-package-definitely-does-not-exist-xyz123abc": "^1.0.0",
+    "fake-supply-chain-attack-package-test": "^2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "another-nonexistent-package-for-testing-purposes": "^1.0.0"
+  }
+}

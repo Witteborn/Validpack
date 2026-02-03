@@ -1,0 +1,10 @@
+{
+  "whitelist": [
+    "internal-company-package",
+    "my-private-registry-package"
+  ],
+  "blacklist": [
+    "Newtonsoft.Json",
+    "moment"
+  ]
+}

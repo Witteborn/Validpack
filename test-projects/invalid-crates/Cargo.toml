@@ -1,0 +1,13 @@
+[package]
+name = "invalid-crates-test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = "1.0"
+this-crate-definitely-does-not-exist-xyz123 = "1.0.0"
+fake-malicious-rust-crate = { version = "2.0", features = ["evil"] }
+another-nonexistent-crate-test = "0.1"
+
+[dev-dependencies]
+tokio = "1.0"

@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'com.example'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Valid dependency
+    implementation 'com.google.guava:guava:31.0-jre'
+    
+    // Fake dependencies (Supply Chain Attack Simulation)
+    implementation 'com.fake.malicious:evil-gradle-package:1.0.0'
+    implementation "org.nonexistent.company:supply-chain-attack-test:2.0.0"
+    testImplementation 'io.fake:another-fake-gradle-artifact:3.0.0'
+}

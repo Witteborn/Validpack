@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="LICENSE.md" />
+    <File Path=".gitignore" />
+    <File Path="validpack.json" />
+  </Folder>
+  <Project Path="Validpack/Validpack.csproj" />
+  <Project Path="Validpack.Tests/Validpack.Tests.csproj" />
+</Solution>
