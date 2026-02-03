@@ -133,7 +133,7 @@ Packages on the blacklist are **immediately flagged** as problems, regardless of
 ### GitHub Actions
 
 ```yaml
-name: Security Scan
+name: Validpack - Supply Chain Security Scan
 
 on: [push, pull_request]
 
