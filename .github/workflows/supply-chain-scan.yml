@@ -19,14 +19,8 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Build Validpack
-        run: dotnet build Validpack/Validpack.csproj -c Release
+      - name: Install Validpack
+        run: dotnet tool install --global Validpack
 
-      - name: Pack Validpack
-        run: dotnet pack Validpack/Validpack.csproj -c Release --no-build
-
-      - name: Install Validpack (from local build)
-        run: dotnet tool install --global --add-source Validpack/nupkg Validpack
-
-      - name: Run Supply Chain Security Scan (dogfooding)
+      - name: Run Supply Chain Security Scan
         run: validpack . --verbose
