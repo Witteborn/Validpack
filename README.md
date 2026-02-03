@@ -37,8 +37,8 @@ dotnet tool install Validpack
 ### From Source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Validpack.git
-cd Validpack/src/Validpack
+git clone https://github.com/Witteborn/Validpack.git
+cd Validpack/Validpack
 dotnet pack -c Release
 dotnet tool install --global --add-source ./nupkg Validpack
 ```
