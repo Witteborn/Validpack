@@ -1,6 +1,6 @@
 # Python dependencies with fake packages (Supply Chain Attack Simulation)
 requests>=2.28.0
 this-package-definitely-does-not-exist-xyz123==1.0.0
-flask==2.3.0
+flask==2.3.2
 fake-malicious-python-package>=1.0
 another-nonexistent-pypi-package-test
